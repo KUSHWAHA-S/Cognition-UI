@@ -9,7 +9,8 @@ const app = express();
 const allowedOrigins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://motionfolio-mu.vercel.app"
+    "https://motionfolio-mu.vercel.app",
+    "https://motionfolio-btpz.vercel.app",
 ];
 
 app.use(cors({
