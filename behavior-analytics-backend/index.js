@@ -124,6 +124,54 @@ app.post("/track", async (req, res) => {
     res.json({ status: "ok" });
 });
 
+app.get("/sessions/:siteId", async (req, res) => {
+    if (!supabase) {
+        return res.status(500).json({
+            error: "Supabase is not configured. Set SUPABASE_URL and SUPABASE_KEY in .env"
+        });
+    }
+
+    const { siteId } = req.params;
+    if (!UUID_V4_REGEX.test(siteId)) {
+        return res.status(400).json({
+            error: "siteId must be a valid UUID v4 string"
+        });
+    }
+
+    const { data, error } = await supabase
+        .from("sessions")
+        .select("*")
+        .eq("site_id", siteId)
+        .order("created_at", { ascending: false });
+
+    if (error) return res.status(500).json(error);
+    res.json(data);
+});
+
+app.get("/events/:sessionId", async (req, res) => {
+    if (!supabase) {
+        return res.status(500).json({
+            error: "Supabase is not configured. Set SUPABASE_URL and SUPABASE_KEY in .env"
+        });
+    }
+
+    const { sessionId } = req.params;
+    if (!UUID_V4_REGEX.test(sessionId)) {
+        return res.status(400).json({
+            error: "sessionId must be a valid UUID v4 string"
+        });
+    }
+
+    const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("session_id", sessionId)
+        .order("time", { ascending: true });
+
+    if (error) return res.status(500).json(error);
+    res.json(data);
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     if (!hasSupabaseConfig) {
