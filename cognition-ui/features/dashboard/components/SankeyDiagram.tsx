@@ -68,7 +68,6 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
   const graph = useMemo<SankeyGraph<NodeDatum, LinkDatum> | null>(() => {
     if (!filteredFlows.length) return null;
 
-    // Collect unique node IDs
     const nodeIds = Array.from(
       new Set(filteredFlows.flatMap((f) => [f.source, f.target]))
     );
@@ -105,9 +104,12 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
 
   if (!flows.length) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-gray-600 text-sm gap-2">
+      <div
+        className="flex flex-col items-center justify-center h-64 text-sm gap-2"
+        style={{ color: "var(--text-dim)" }}
+      >
         <span>No flow data yet.</span>
-        <span className="text-xs text-gray-700">
+        <span className="text-xs" style={{ color: "var(--text-dim)" }}>
           Sessions need at least 2 page views to appear here.
         </span>
       </div>
@@ -118,22 +120,32 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
     <div className="space-y-4">
       {/* Filter */}
       <div className="flex items-center gap-3">
-        <span className="text-xs text-gray-500">Filter by archetype</span>
+        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+          Filter by archetype
+        </span>
         <div className="flex gap-1.5 flex-wrap">
           {FILTER_OPTIONS.map(({ value, label }) => {
             const active = filter === value;
             const color =
-              value === "all" ? "#6366f1" : ARCHETYPE_CONFIG[value].color;
+              value === "all" ? "var(--maroon-600)" : ARCHETYPE_CONFIG[value].color;
             return (
               <button
                 key={value}
                 onClick={() => setFilter(value)}
-                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                className="px-3 py-1 rounded-full text-xs font-medium transition-all duration-150"
+                style={
                   active
-                    ? "text-white border-transparent"
-                    : "text-gray-400 border-gray-700 hover:border-gray-500 hover:text-gray-200"
-                }`}
-                style={active ? { background: color, borderColor: color } : {}}
+                    ? {
+                        background: color,
+                        color: "#fff",
+                        border: `1px solid transparent`,
+                        boxShadow: `0 0 8px ${color}55`,
+                      }
+                    : {
+                        color: "var(--text-muted)",
+                        border: "1px solid var(--border-muted)",
+                      }
+                }
               >
                 {label}
               </button>
@@ -143,9 +155,18 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
       </div>
 
       {/* Diagram */}
-      <div className="relative overflow-x-auto rounded-xl bg-gray-950 border border-gray-800 p-2">
+      <div
+        className="relative overflow-x-auto rounded-xl p-2"
+        style={{
+          background: "var(--bg-base)",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
         {!graph ? (
-          <div className="flex items-center justify-center h-48 text-gray-600 text-sm">
+          <div
+            className="flex items-center justify-center h-48 text-sm"
+            style={{ color: "var(--text-dim)" }}
+          >
             No flows for this archetype
           </div>
         ) : (
@@ -168,7 +189,7 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
                     fill="none"
                     stroke={color}
                     strokeWidth={strokeWidth}
-                    strokeOpacity={0.35}
+                    strokeOpacity={0.4}
                     className="transition-all duration-150 cursor-pointer"
                     onMouseEnter={(e) => {
                       const src = (link.source as SNode).label;
@@ -185,7 +206,7 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
                       )
                     }
                     onMouseLeave={() => setTooltip(null)}
-                    style={{ filter: "url(#glow)" }}
+                    style={{ filter: "url(#warmGlow)" }}
                   />
                 );
               })}
@@ -210,9 +231,9 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
                       y={y0}
                       width={x1 - x0}
                       height={nodeHeight}
-                      fill="#818cf8"
+                      fill="#D45328"
                       rx={3}
-                      opacity={0.9}
+                      opacity={0.85}
                       onMouseEnter={(e) => {
                         const inflow = (node.targetLinks as SLink[]).reduce(
                           (s, l) => s + l.value,
@@ -237,7 +258,7 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
                       textAnchor={alignRight ? "end" : "start"}
                       dominantBaseline="middle"
                       fontSize={11}
-                      fill="#9ca3af"
+                      fill="#8A7070"
                     >
                       {node.label}
                     </text>
@@ -246,9 +267,9 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
               })}
             </g>
 
-            {/* Glow filter for links */}
+            {/* Warm glow filter */}
             <defs>
-              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <filter id="warmGlow" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="2" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
@@ -262,8 +283,14 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
         {/* Floating tooltip */}
         {tooltip && (
           <div
-            className="fixed z-50 pointer-events-none bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 shadow-xl whitespace-pre-line"
-            style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
+            className="fixed z-50 pointer-events-none rounded-lg px-3 py-2 text-xs shadow-xl whitespace-pre-line"
+            style={{
+              left: tooltip.x + 12,
+              top: tooltip.y - 10,
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-muted)",
+              color: "var(--text-secondary)",
+            }}
           >
             {tooltip.content}
           </div>
@@ -279,12 +306,16 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
             .reduce((s, f) => s + f.value, 0);
           if (!count) return null;
           return (
-            <div key={a} className="flex items-center gap-1.5 text-xs text-gray-500">
+            <div
+              key={a}
+              className="flex items-center gap-1.5 text-xs"
+              style={{ color: "var(--text-muted)" }}
+            >
               <span
                 className="w-3 h-3 rounded-sm inline-block"
                 style={{ background: cfg.color }}
               />
-              <span className="text-gray-400">{cfg.label}</span>
+              <span style={{ color: "var(--text-secondary)" }}>{cfg.label}</span>
               <span>{count} paths</span>
             </div>
           );

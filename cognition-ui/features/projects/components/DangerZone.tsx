@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, AlertTriangle } from "lucide-react";
 
 interface Props {
   trackingId: string;
@@ -33,47 +33,105 @@ export function DangerZone({ trackingId, projectName }: Props) {
   }
 
   return (
-    <div className="rounded-2xl border border-red-900/50 bg-red-950/20 p-6 space-y-4">
-      <div>
-        <h3 className="text-sm font-medium text-red-400">Danger zone</h3>
-        <p className="text-xs text-gray-500 mt-1">
-          Deleting this project removes all its events and sessions permanently. This
-          cannot be undone.
-        </p>
+    <div
+      className="rounded-2xl p-6 space-y-4"
+      style={{
+        border: "1px solid rgba(220,38,38,0.25)",
+        background: "rgba(220,38,38,0.04)",
+      }}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+          style={{ background: "rgba(220,38,38,0.12)" }}
+        >
+          <AlertTriangle size={15} style={{ color: "var(--color-danger)" }} />
+        </div>
+        <div>
+          <h3
+            className="text-sm font-semibold"
+            style={{ color: "var(--color-danger)" }}
+          >
+            Danger zone
+          </h3>
+          <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+            Deleting this project removes all its events and sessions permanently.
+            This cannot be undone.
+          </p>
+        </div>
       </div>
 
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-800 text-red-400 hover:bg-red-950 text-sm transition-colors"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-150"
+          style={{
+            border: "1px solid rgba(220,38,38,0.35)",
+            color: "var(--color-danger)",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "rgba(220,38,38,0.08)";
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(220,38,38,0.6)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "transparent";
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(220,38,38,0.35)";
+          }}
         >
           <Trash2 size={14} />
           Delete project
         </button>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
             Delete{" "}
-            <span className="font-medium text-white">{projectName}</span>?
-            All data will be lost.
+            <span className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              {projectName}
+            </span>
+            ? All data will be permanently lost.
           </p>
           <div className="flex gap-2">
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+              className="px-3 py-2 rounded-lg text-white text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+              style={{ background: "var(--color-danger)" }}
+              onMouseEnter={(e) => {
+                if (!deleting) {
+                  (e.currentTarget as HTMLElement).style.opacity = "0.85";
+                }
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.opacity = "1";
+              }}
             >
               {deleting ? "Deleting…" : "Yes, delete"}
             </button>
             <button
               onClick={() => setConfirming(false)}
               disabled={deleting}
-              className="px-3 py-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white text-sm transition-colors"
+              className="px-3 py-2 rounded-lg text-sm transition-all duration-150"
+              style={{
+                border: "1px solid var(--border-muted)",
+                color: "var(--text-muted)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-hover)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-muted)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+              }}
             >
               Cancel
             </button>
           </div>
-          {error && <p className="text-red-400 text-xs">{error}</p>}
+          {error && (
+            <p className="text-xs" style={{ color: "var(--color-danger)" }}>
+              {error}
+            </p>
+          )}
         </div>
       )}
     </div>

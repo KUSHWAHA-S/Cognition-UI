@@ -33,22 +33,41 @@ function CustomTooltip({
   const { archetype, count } = payload[0].payload;
   const config = ARCHETYPE_CONFIG[archetype];
   return (
-    <div className="rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 text-sm shadow-lg">
-      <p className="font-medium" style={{ color: config.color }}>
+    <div
+      className="rounded-lg px-3 py-2 text-sm shadow-xl"
+      style={{
+        background: "var(--bg-elevated)",
+        border: "1px solid var(--border-muted)",
+      }}
+    >
+      <p className="font-semibold" style={{ color: config.color }}>
         {config.label}
       </p>
-      <p className="text-gray-300">{count} sessions</p>
-      <p className="text-gray-500 text-xs mt-0.5">{config.description}</p>
+      <p style={{ color: "var(--text-secondary)" }}>{count} sessions</p>
+      <p
+        className="mt-0.5"
+        style={{ color: "var(--text-muted)", fontSize: "11px" }}
+      >
+        {config.description}
+      </p>
     </div>
   );
 }
 
-function CustomLegend({ payload }: { payload?: { value: string; color: string }[] }) {
+function CustomLegend({
+  payload,
+}: {
+  payload?: { value: string; color: string }[];
+}) {
   if (!payload) return null;
   return (
     <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3">
       {payload.map((entry) => (
-        <li key={entry.value} className="flex items-center gap-1.5 text-xs text-gray-400">
+        <li
+          key={entry.value}
+          className="flex items-center gap-1.5 text-xs"
+          style={{ color: "var(--text-muted)" }}
+        >
           <span
             className="inline-block w-2.5 h-2.5 rounded-full"
             style={{ background: entry.color }}
@@ -63,7 +82,10 @@ function CustomLegend({ payload }: { payload?: { value: string; color: string }[
 export function ArchetypeDonut({ data }: Props) {
   if (!data.length) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-600 text-sm">
+      <div
+        className="flex items-center justify-center h-64 text-sm"
+        style={{ color: "var(--text-dim)" }}
+      >
         No classified sessions yet
       </div>
     );
@@ -103,10 +125,19 @@ export function ArchetypeDonut({ data }: Props) {
         </PieChart>
       </ResponsiveContainer>
       {/* Centre label */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-           style={{ top: "-12px" }}>
-        <span className="text-2xl font-semibold text-white">{total}</span>
-        <span className="text-xs text-gray-500">sessions</span>
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+        style={{ top: "-12px" }}
+      >
+        <span
+          className="text-2xl font-bold"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {total}
+        </span>
+        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+          sessions
+        </span>
       </div>
     </div>
   );

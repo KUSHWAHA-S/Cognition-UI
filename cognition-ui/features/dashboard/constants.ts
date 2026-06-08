@@ -8,22 +8,22 @@ export const ARCHETYPE_CONFIG: Record<
 > = {
   explorer: {
     label: "Explorer",
-    color: "#6366f1", // indigo
+    color: "#E07B39", // warm orange — discovery energy
     description: "Discovering widely, slow and curious",
   },
   goal_seeker: {
     label: "Goal-seeker",
-    color: "#22c55e", // green
+    color: "#22C55E", // green — achievement
     description: "Fast, direct, knows what they want",
   },
   confused: {
     label: "Confused",
-    color: "#ef4444", // red
+    color: "#DC2626", // red — universal alert
     description: "Lost, backtracking, rage clicking",
   },
   comparison_shopper: {
     label: "Comparison-shopper",
-    color: "#f59e0b", // amber
+    color: "#F59E0B", // amber — harmonizes with orange palette
     description: "Deciding, hovering, revisiting same pages",
   },
 };

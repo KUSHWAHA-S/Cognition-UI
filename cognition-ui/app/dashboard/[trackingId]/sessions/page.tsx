@@ -41,8 +41,13 @@ export default async function SessionsPage({ params, searchParams }: Props) {
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Sessions</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Sessions
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
             {count ?? 0} classified session{count !== 1 ? "s" : ""}
           </p>
         </div>

@@ -1,6 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
-// Browser anon client — used for auth flows in Client Components only.
+// Browser client — uses cookies (not localStorage) so server components
+// and proxy can read the session from the same cookie store.
 export function createAnonClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -9,5 +10,5 @@ export function createAnonClient() {
       "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY"
     );
   }
-  return createClient(url, key);
+  return createBrowserClient(url, key);
 }

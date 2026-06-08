@@ -29,21 +29,48 @@ export default async function SettingsPage({ params }: Props) {
   return (
     <div className="space-y-8 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Settings</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: "var(--text-primary)" }}
+        >
+          Settings
+        </h1>
+        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
           Manage your project and get your embed code.
         </p>
       </div>
 
-      {/* Embed code — most important, shown first */}
-      <section className="rounded-2xl bg-gray-900 border border-gray-800 p-6 space-y-1">
-        <h2 className="text-sm font-medium text-white mb-4">Installation</h2>
+      {/* Embed code */}
+      <section
+        className="rounded-2xl p-6 space-y-1"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
+        <h2
+          className="text-xs font-semibold uppercase tracking-wider mb-4"
+          style={{ color: "var(--text-muted)" }}
+        >
+          Installation
+        </h2>
         <EmbedCode trackingId={project.tracking_id} />
       </section>
 
       {/* Project details */}
-      <section className="rounded-2xl bg-gray-900 border border-gray-800 p-6">
-        <h2 className="text-sm font-medium text-white mb-4">Project details</h2>
+      <section
+        className="rounded-2xl p-6"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
+        <h2
+          className="text-xs font-semibold uppercase tracking-wider mb-4"
+          style={{ color: "var(--text-muted)" }}
+        >
+          Project details
+        </h2>
         <ProjectSettingsForm
           trackingId={project.tracking_id}
           initialName={project.name}

@@ -77,14 +77,25 @@ export default async function FlowsPage({ params }: Props) {
   return (
     <div className="space-y-6 max-w-6xl">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Click Flow</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: "var(--text-primary)" }}
+        >
+          Click Flow
+        </h1>
+        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
           Page-to-page navigation paths, coloured by user archetype.
           Thicker links = more sessions took that path.
         </p>
       </div>
 
-      <div className="rounded-2xl bg-gray-900 border border-gray-800 p-6">
+      <div
+        className="rounded-2xl p-6"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
         <SankeyDiagram flows={flows} />
       </div>
     </div>

@@ -28,7 +28,6 @@ async function getOverviewData(trackingId: string, userId: string): Promise<Over
 
   const rows = sessions ?? [];
 
-  // Archetype breakdown
   const countMap: Record<string, number> = {};
   for (const row of rows) {
     countMap[row.archetype] = (countMap[row.archetype] ?? 0) + 1;
@@ -38,7 +37,6 @@ async function getOverviewData(trackingId: string, userId: string): Promise<Over
     .map(([archetype, count]) => ({ archetype: archetype as any, count }))
     .sort((a, b) => b.count - a.count);
 
-  // 7-day trend with zero-fill
   const dayMap: Record<string, number> = {};
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now);
@@ -87,16 +85,23 @@ export default async function OverviewPage({ params }: Props) {
     ? ARCHETYPE_CONFIG[data.highest_dropoff]
     : null;
 
-  // Sessions today
   const today = new Date().toISOString().slice(0, 10);
   const todayCount =
     data.session_trend.find((d) => d.date === today)?.count ?? 0;
 
   return (
     <div className="space-y-8 max-w-5xl">
+      {/* Page header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">Overview</h1>
-        <p className="text-gray-500 text-sm mt-1">Last 7 days</p>
+        <h1
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: "var(--text-primary)" }}
+        >
+          Overview
+        </h1>
+        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+          Last 7 days · live data
+        </p>
       </div>
 
       {/* Stat cards */}
@@ -104,41 +109,67 @@ export default async function OverviewPage({ params }: Props) {
         <StatCard
           label="Sessions this week"
           value={data.total_this_week}
+          borderColor="var(--orange-500)"
+          accent="var(--orange-300)"
         />
         <StatCard
           label="Today"
           value={todayCount}
           sub="sessions"
+          borderColor="var(--maroon-400)"
+          accent="var(--text-primary)"
         />
         <StatCard
           label="Top archetype"
           value={topConfig?.label ?? "—"}
-          accent={topConfig ? `text-[${topConfig.color}]` : "text-gray-500"}
+          borderColor={topConfig?.color ?? "var(--border-muted)"}
+          accent={topConfig?.color ?? "var(--text-muted)"}
         />
         <StatCard
           label="Needs attention"
           value={dropoffConfig?.label ?? "—"}
           sub="highest confusion signal"
-          accent="text-red-400"
+          borderColor="var(--color-danger)"
+          accent="var(--color-danger)"
         />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl bg-gray-900 border border-gray-800 p-6">
-          <h2 className="text-sm font-medium text-gray-400 mb-4">
+        {/* Donut */}
+        <div
+          className="rounded-2xl p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-subtle)",
+          }}
+        >
+          <h2
+            className="text-xs font-semibold uppercase tracking-wider mb-4"
+            style={{ color: "var(--text-muted)" }}
+          >
             Archetype breakdown
           </h2>
           <ArchetypeDonut data={data.archetype_breakdown} />
         </div>
 
-        <div className="rounded-2xl bg-gray-900 border border-gray-800 p-6">
-          <h2 className="text-sm font-medium text-gray-400 mb-4">
+        {/* Trend */}
+        <div
+          className="rounded-2xl p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-subtle)",
+          }}
+        >
+          <h2
+            className="text-xs font-semibold uppercase tracking-wider mb-4"
+            style={{ color: "var(--text-muted)" }}
+          >
             Sessions per day
           </h2>
           <SessionTrend data={data.session_trend} />
 
-          {/* Legend under chart */}
+          {/* Legend */}
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
             {data.archetype_breakdown.map(({ archetype, count }) => {
               const cfg = ARCHETYPE_CONFIG[archetype];
@@ -146,7 +177,11 @@ export default async function OverviewPage({ params }: Props) {
                 ? Math.round((count / data.total_this_week) * 100)
                 : 0;
               return (
-                <div key={archetype} className="flex items-center gap-1.5 text-xs text-gray-500">
+                <div
+                  key={archetype}
+                  className="flex items-center gap-1.5 text-xs"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   <span
                     className="w-2 h-2 rounded-full inline-block"
                     style={{ background: cfg.color }}

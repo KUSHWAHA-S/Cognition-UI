@@ -29,7 +29,7 @@ export default async function DashboardLayout({ children, params }: Props) {
   if (!project) redirect("/dashboard");
 
   return (
-    <div className="flex min-h-screen bg-gray-950">
+    <div className="flex min-h-screen" style={{ background: "var(--bg-base)" }}>
       <Sidebar trackingId={trackingId} projectName={project.name} />
       <main className="flex-1 overflow-auto p-8">{children}</main>
     </div>

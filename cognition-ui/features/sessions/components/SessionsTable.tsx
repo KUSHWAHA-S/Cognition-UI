@@ -53,61 +53,89 @@ export function SessionsTable({ sessions, trackingId, page, hasMore }: Props) {
   return (
     <div className="space-y-4">
       {/* Table */}
-      <div className="rounded-xl border border-gray-800 overflow-hidden">
+      <div
+        className="rounded-xl overflow-hidden"
+        style={{ border: "1px solid var(--border-subtle)" }}
+      >
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-800 bg-gray-900">
-              <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium">
+            <tr style={{ borderBottom: "1px solid var(--border-subtle)", background: "var(--bg-surface)" }}>
+              <th
+                className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Session ID
               </th>
-              <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium">
+              <th
+                className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Archetype
               </th>
-              <th className="text-right px-4 py-3 text-xs text-gray-500 font-medium">
+              <th
+                className="text-right px-4 py-3 text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Events
               </th>
-              <th className="text-right px-4 py-3 text-xs text-gray-500 font-medium">
+              <th
+                className="text-right px-4 py-3 text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Duration
               </th>
-              <th className="text-right px-4 py-3 text-xs text-gray-500 font-medium">
+              <th
+                className="text-right px-4 py-3 text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Date
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800">
+          <tbody>
             {sessions.length === 0 && (
               <tr>
                 <td
                   colSpan={5}
-                  className="px-4 py-10 text-center text-gray-600 text-sm"
+                  className="px-4 py-10 text-center text-sm"
+                  style={{ color: "var(--text-dim)", background: "var(--bg-base)" }}
                 >
                   No sessions classified yet.
                 </td>
               </tr>
             )}
-            {sessions.map((s) => (
+            {sessions.map((s, idx) => (
               <tr
                 key={s.id}
                 onClick={() =>
-                  router.push(
-                    `/dashboard/${trackingId}/sessions/${s.id}`
-                  )
+                  router.push(`/dashboard/${trackingId}/sessions/${s.id}`)
                 }
-                className="bg-gray-950 hover:bg-gray-900 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors duration-100 group"
+                style={{
+                  background: idx % 2 === 0 ? "var(--bg-base)" : "var(--bg-surface)",
+                  borderBottom: "1px solid var(--border-subtle)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background =
+                    idx % 2 === 0 ? "var(--bg-base)" : "var(--bg-surface)";
+                }}
               >
-                <td className="px-4 py-3 font-mono text-gray-400">
+                <td className="px-4 py-3 font-mono text-xs" style={{ color: "var(--text-muted)" }}>
                   {shortId(s.id)}
                 </td>
                 <td className="px-4 py-3">
                   <ArchetypeBadge archetype={s.archetype} size="sm" />
                 </td>
-                <td className="px-4 py-3 text-right text-gray-300">
+                <td className="px-4 py-3 text-right" style={{ color: "var(--text-secondary)" }}>
                   {s.total_events}
                 </td>
-                <td className="px-4 py-3 text-right text-gray-300">
+                <td className="px-4 py-3 text-right" style={{ color: "var(--text-secondary)" }}>
                   {formatDuration(s.session_start, s.session_end)}
                 </td>
-                <td className="px-4 py-3 text-right text-gray-500">
+                <td className="px-4 py-3 text-right" style={{ color: "var(--text-muted)" }}>
                   {formatDate(s.session_start)}
                 </td>
               </tr>
@@ -118,19 +146,49 @@ export function SessionsTable({ sessions, trackingId, page, hasMore }: Props) {
 
       {/* Pagination */}
       <div className="flex items-center justify-between text-sm">
-        <span className="text-gray-600 text-xs">Page {page}</span>
+        <span className="text-xs" style={{ color: "var(--text-dim)" }}>
+          Page {page}
+        </span>
         <div className="flex gap-2">
           <button
             onClick={() => goTo(page - 1)}
             disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xs"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{
+              border: "1px solid var(--border-muted)",
+              color: "var(--text-muted)",
+            }}
+            onMouseEnter={(e) => {
+              if (page > 1) {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--maroon-600)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--border-muted)";
+              (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+            }}
           >
             <ChevronLeft size={13} /> Prev
           </button>
           <button
             onClick={() => goTo(page + 1)}
             disabled={!hasMore}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xs"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{
+              border: "1px solid var(--border-muted)",
+              color: "var(--text-muted)",
+            }}
+            onMouseEnter={(e) => {
+              if (hasMore) {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--maroon-600)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--border-muted)";
+              (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+            }}
           >
             Next <ChevronRight size={13} />
           </button>
