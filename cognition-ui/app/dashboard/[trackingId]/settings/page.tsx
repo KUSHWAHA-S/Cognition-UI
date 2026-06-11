@@ -4,6 +4,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { EmbedCode } from "@/features/projects/components/EmbedCode";
 import { ProjectSettingsForm } from "@/features/projects/components/ProjectSettingsForm";
 import { DangerZone } from "@/features/projects/components/DangerZone";
+import { ClassifyButton } from "@/features/projects/components/ClassifyButton";
 
 interface Props {
   params: Promise<{ trackingId: string }>;
@@ -76,6 +77,23 @@ export default async function SettingsPage({ params }: Props) {
           initialName={project.name}
           initialDomain={project.domain}
         />
+      </section>
+
+      {/* Classify sessions */}
+      <section
+        className="rounded-2xl p-6"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
+        <h2
+          className="text-xs font-semibold uppercase tracking-wider mb-4"
+          style={{ color: "var(--text-muted)" }}
+        >
+          Session classification
+        </h2>
+        <ClassifyButton />
       </section>
 
       {/* Danger zone */}

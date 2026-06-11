@@ -79,13 +79,40 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
       label: toLabel(id),
     }));
 
-    const links: (LinkDatum & { source: number; target: number })[] =
+    const rawLinks: (LinkDatum & { source: number; target: number })[] =
       filteredFlows.map((f) => ({
         source: nodeIndex.get(f.source)!,
         target: nodeIndex.get(f.target)!,
         value: f.value,
         archetype: f.archetype,
       }));
+
+    // Remove back-edges that would create cycles (d3-sankey throws on cycles).
+    // For each candidate link, check whether target can already reach source
+    // via existing accepted links. If yes, skip it.
+    const adj: Set<number>[] = Array.from({ length: nodes.length }, () => new Set());
+
+    function canReach(from: number, to: number): boolean {
+      const visited = new Set<number>();
+      const stack = [from];
+      while (stack.length) {
+        const cur = stack.pop()!;
+        if (cur === to) return true;
+        if (visited.has(cur)) continue;
+        visited.add(cur);
+        adj[cur].forEach((n) => stack.push(n));
+      }
+      return false;
+    }
+
+    const links = rawLinks.filter((l) => {
+      if (l.source === l.target) return false;       // self-loop
+      if (canReach(l.target, l.source)) return false; // back-edge
+      adj[l.source].add(l.target);
+      return true;
+    });
+
+    if (!links.length) return null;
 
     const layout = sankey<NodeDatum, LinkDatum>()
       .nodeWidth(NODE_WIDTH)
