@@ -3,6 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { SeedButton } from "@/features/dashboard/components/SeedButton";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 export default async function DashboardRootPage() {
   const supabaseAuth = await createSupabaseServerClient();
   const { data: { user } } = await supabaseAuth.auth.getUser();
@@ -47,16 +49,16 @@ export default async function DashboardRootPage() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <SeedButton />
+          {isDev && <SeedButton />}
           <a
             href="/dashboard/new"
-            className="w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-150"
+            className="w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-150 text-center"
             style={{
               border: "1px solid var(--border-muted)",
               color: "var(--text-muted)",
             }}
           >
-            Create a real project
+            {isDev ? "Create a real project" : "Create your first project"}
           </a>
         </div>
       </div>

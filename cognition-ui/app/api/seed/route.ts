@@ -78,6 +78,10 @@ function scoreFor(archetype: Archetype) {
 // ─── Route ────────────────────────────────────────────────────────────────────
 
 export async function POST() {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const supabaseAuth = await createSupabaseServerClient();
   const { data: { user } } = await supabaseAuth.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });

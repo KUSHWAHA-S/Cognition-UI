@@ -285,7 +285,7 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
                       textAnchor={alignRight ? "end" : "start"}
                       dominantBaseline="middle"
                       fontSize={11}
-                      fill="#8A7070"
+                      fill="var(--text-muted)"
                     >
                       {node.label}
                     </text>

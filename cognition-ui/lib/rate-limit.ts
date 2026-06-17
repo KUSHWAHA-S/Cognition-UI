@@ -1,3 +1,6 @@
+// NOTE: This counter lives in-process and resets on every cold start (serverless).
+// Good enough for MVP. For production at scale, swap the Map for
+// Upstash Redis + @upstash/ratelimit (sliding window, survives cold starts).
 const store = new Map<string, { count: number; resetAt: number }>();
 
 export function checkRateLimit(

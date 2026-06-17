@@ -22,13 +22,13 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
 };
 
 const EVENT_COLORS: Record<string, string> = {
-  click:         "text-indigo-400 bg-indigo-950",
-  page_view:     "text-blue-400 bg-blue-950",
-  scroll:        "text-gray-400 bg-gray-800",
-  backtrack:     "text-amber-400 bg-amber-950",
-  dead_click:    "text-orange-400 bg-orange-950",
-  rage_click:    "text-red-400 bg-red-950",
-  hover:         "text-purple-400 bg-purple-950",
+  click:         "text-indigo-700 bg-indigo-50",
+  page_view:     "text-blue-700 bg-blue-50",
+  scroll:        "text-stone-500 bg-stone-100",
+  backtrack:     "text-amber-700 bg-amber-50",
+  dead_click:    "text-orange-700 bg-orange-50",
+  rage_click:    "text-red-700 bg-red-50",
+  hover:         "text-purple-700 bg-purple-50",
 };
 
 function formatTs(ts: string) {
@@ -92,20 +92,28 @@ export default async function SessionDetailPage({ params }: Props) {
       {/* Back */}
       <Link
         href={`/dashboard/${trackingId}/sessions`}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-white transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm transition-colors"
+        style={{ color: "var(--text-muted)" }}
       >
         <ChevronLeft size={14} /> Back to sessions
       </Link>
 
       {/* Header */}
-      <div className="rounded-2xl bg-gray-900 border border-gray-800 p-6 space-y-4">
+      <div
+        className="rounded-2xl p-6 space-y-4"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-subtle)",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-xs text-gray-500 font-mono mb-1">{session.id}</p>
+            <p className="text-xs font-mono mb-1" style={{ color: "var(--text-dim)" }}>{session.id}</p>
             <ArchetypeBadge archetype={archetype} />
-            <p className="text-gray-500 text-xs mt-2">{cfg.description}</p>
+            <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>{cfg.description}</p>
           </div>
-          <div className="text-right text-xs text-gray-500 space-y-0.5">
+          <div className="text-right text-xs space-y-0.5" style={{ color: "var(--text-muted)" }}>
             <p>{formatDuration(session.session_start, session.session_end)} session</p>
             <p>{session.total_events} events</p>
             <p>{new Date(session.session_start).toLocaleDateString("en-US", {
@@ -119,10 +127,10 @@ export default async function SessionDetailPage({ params }: Props) {
           {scores.map(({ label, value, hint }) => (
             <div key={label} className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="text-gray-400">{label}</span>
-                <span className="text-gray-300 font-medium">{(value ?? 0).toFixed(1)}</span>
+                <span style={{ color: "var(--text-muted)" }}>{label}</span>
+                <span className="font-medium" style={{ color: "var(--text-secondary)" }}>{(value ?? 0).toFixed(1)}</span>
               </div>
-              <div className="h-1.5 rounded-full bg-gray-800 overflow-hidden">
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-elevated)" }}>
                 <div
                   className="h-full rounded-full transition-all"
                   style={{
@@ -131,7 +139,7 @@ export default async function SessionDetailPage({ params }: Props) {
                   }}
                 />
               </div>
-              <p className="text-xs text-gray-600">{hint}</p>
+              <p className="text-xs" style={{ color: "var(--text-dim)" }}>{hint}</p>
             </div>
           ))}
         </div>
@@ -139,17 +147,17 @@ export default async function SessionDetailPage({ params }: Props) {
 
       {/* Event timeline */}
       <div>
-        <h2 className="text-sm font-medium text-gray-400 mb-3">
+        <h2 className="text-sm font-medium mb-3" style={{ color: "var(--text-muted)" }}>
           Event sequence ({events?.length ?? 0} events)
         </h2>
 
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-[18px] top-0 bottom-0 w-px bg-gray-800" />
+          <div className="absolute left-[18px] top-0 bottom-0 w-px" style={{ background: "var(--border-subtle)" }} />
 
           <div className="space-y-1">
             {(events ?? []).map((ev, i) => {
-              const colorClass = EVENT_COLORS[ev.event_type] ?? "text-gray-400 bg-gray-800";
+              const colorClass = EVENT_COLORS[ev.event_type] ?? "text-stone-500 bg-stone-100";
               const icon = EVENT_ICONS[ev.event_type] ?? <MousePointerClick size={13} />;
 
               const meta: string[] = [];
@@ -168,16 +176,16 @@ export default async function SessionDetailPage({ params }: Props) {
                   {/* Content */}
                   <div className="flex-1 min-w-0 pb-1 pt-1.5">
                     <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                      <span className="text-sm text-white font-medium">
+                      <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                         {ev.event_type.replace("_", " ")}
                       </span>
-                      <span className="text-xs text-gray-600 shrink-0">
+                      <span className="text-xs shrink-0" style={{ color: "var(--text-dim)" }}>
                         {formatTs(ev.timestamp)}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 truncate">{toPath(ev.page_url)}</p>
+                    <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>{toPath(ev.page_url)}</p>
                     {meta.length > 0 && (
-                      <p className="text-xs text-gray-700 mt-0.5">{meta.join(" · ")}</p>
+                      <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>{meta.join(" · ")}</p>
                     )}
                   </div>
                 </div>
