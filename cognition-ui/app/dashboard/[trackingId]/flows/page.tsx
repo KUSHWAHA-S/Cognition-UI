@@ -5,6 +5,7 @@ import { SankeyDiagram } from "@/features/dashboard/components/SankeyDiagram";
 import type { Archetype } from "@/features/sessions/types";
 import type { RawFlow } from "@/features/dashboard/flows/types";
 import { toLabel } from "@/features/dashboard/flows/utils";
+import { DEMO_TRACKING_ID, DEMO_FLOWS } from "@/features/dashboard/demoData";
 
 interface Props {
   params: Promise<{ trackingId: string }>;
@@ -68,11 +69,16 @@ async function getFlowData(trackingId: string): Promise<RawFlow[]> {
 export default async function FlowsPage({ params }: Props) {
   const { trackingId } = await params;
 
-  const supabaseAuth = await createSupabaseServerClient();
-  const { data: { user } } = await supabaseAuth.auth.getUser();
-  if (!user) redirect("/login");
+  let flows: RawFlow[];
+  if (trackingId === DEMO_TRACKING_ID) {
+    flows = DEMO_FLOWS;
+  } else {
+    const supabaseAuth = await createSupabaseServerClient();
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user) redirect("/login");
 
-  const flows = await getFlowData(trackingId);
+    flows = await getFlowData(trackingId);
+  }
 
   return (
     <div className="space-y-6 max-w-6xl">

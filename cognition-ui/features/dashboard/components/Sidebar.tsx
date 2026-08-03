@@ -15,9 +15,10 @@ const NAV = [
 interface Props {
   trackingId: string;
   projectName: string;
+  isDemo?: boolean;
 }
 
-export function Sidebar({ trackingId, projectName }: Props) {
+export function Sidebar({ trackingId, projectName, isDemo = false }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -30,7 +31,7 @@ export function Sidebar({ trackingId, projectName }: Props) {
 
   return (
     <aside
-      className="w-56 shrink-0 flex flex-col min-h-screen"
+      className="w-56 shrink-0 flex flex-col h-screen"
       style={{
         background: "var(--bg-sidebar)",
         borderRight: "1px solid var(--border-subtle)",
@@ -55,12 +56,26 @@ export function Sidebar({ trackingId, projectName }: Props) {
             Cognition UI
           </span>
         </div>
-        <p
-          className="text-xs mt-2 truncate pl-0.5"
-          style={{ color: "var(--text-muted)" }}
-        >
-          {projectName}
-        </p>
+        <div className="flex items-center gap-1.5 mt-2 pl-0.5">
+          <p
+            className="text-xs truncate"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {projectName}
+          </p>
+          {isDemo && (
+            <span
+              className="shrink-0 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+              style={{
+                color: "var(--orange-600)",
+                background: "rgba(224,94,28,0.12)",
+                border: "1px solid rgba(224,94,28,0.3)",
+              }}
+            >
+              Demo
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Nav */}
@@ -107,22 +122,41 @@ export function Sidebar({ trackingId, projectName }: Props) {
         className="px-3 py-4"
         style={{ borderTop: "1px solid var(--border-subtle)" }}
       >
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150"
-          style={{ color: "var(--text-dim)" }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
-            (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "transparent";
-            (e.currentTarget as HTMLElement).style.color = "var(--text-dim)";
-          }}
-        >
-          <LogOut size={15} />
-          Sign out
-        </button>
+        {isDemo ? (
+          <Link
+            href="/"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150"
+            style={{ color: "var(--text-dim)" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
+              (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "var(--text-dim)";
+            }}
+          >
+            <LogOut size={15} />
+            Exit demo
+          </Link>
+        ) : (
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150"
+            style={{ color: "var(--text-dim)" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
+              (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "var(--text-dim)";
+            }}
+          >
+            <LogOut size={15} />
+            Sign out
+          </button>
+        )}
       </div>
     </aside>
   );

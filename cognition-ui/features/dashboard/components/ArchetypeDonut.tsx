@@ -36,17 +36,17 @@ function CustomTooltip({
     <div
       className="rounded-lg px-3 py-2 text-sm shadow-xl"
       style={{
-        background: "var(--bg-elevated)",
-        border: "1px solid var(--border-muted)",
+        background: "var(--text-primary)",
+        border: "1px solid rgba(255,255,255,0.08)",
       }}
     >
       <p className="font-semibold" style={{ color: config.color }}>
         {config.label}
       </p>
-      <p style={{ color: "var(--text-secondary)" }}>{count} sessions</p>
+      <p style={{ color: "rgba(247,240,238,0.85)" }}>{count} sessions</p>
       <p
         className="mt-0.5"
-        style={{ color: "var(--text-muted)", fontSize: "11px" }}
+        style={{ color: "rgba(247,240,238,0.55)", fontSize: "11px" }}
       >
         {config.description}
       </p>

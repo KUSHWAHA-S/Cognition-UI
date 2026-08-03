@@ -30,8 +30,10 @@ export async function proxy(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  // Redirect unauthenticated users away from dashboard
-  if (pathname.startsWith("/dashboard") && !user) {
+  // Redirect unauthenticated users away from dashboard — except the public,
+  // read-only /dashboard/demo/* walkthrough, which needs no session.
+  const isDemoRoute = pathname.startsWith("/dashboard/demo");
+  if (pathname.startsWith("/dashboard") && !isDemoRoute && !user) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 

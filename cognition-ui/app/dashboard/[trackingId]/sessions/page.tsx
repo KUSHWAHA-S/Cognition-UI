@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { SessionsTable } from "@/features/sessions/components/SessionsTable";
+import { DEMO_TRACKING_ID, DEMO_SESSIONS } from "@/features/dashboard/demoData";
 
 interface Props {
   params: Promise<{ trackingId: string }>;
@@ -15,27 +16,39 @@ export default async function SessionsPage({ params, searchParams }: Props) {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? 1));
 
-  const supabaseAuth = await createSupabaseServerClient();
-  const { data: { user } } = await supabaseAuth.auth.getUser();
-  if (!user) redirect("/login");
+  let sessions;
+  let count: number;
+  let hasMore: boolean;
 
-  const supabase = createServiceClient();
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
+  if (trackingId === DEMO_TRACKING_ID) {
+    const from = (page - 1) * PAGE_SIZE;
+    sessions = DEMO_SESSIONS.slice(from, from + PAGE_SIZE);
+    count = DEMO_SESSIONS.length;
+    hasMore = from + PAGE_SIZE < DEMO_SESSIONS.length;
+  } else {
+    const supabaseAuth = await createSupabaseServerClient();
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user) redirect("/login");
 
-  const { data, count } = await supabase
-    .from("sessions")
-    .select(
-      "id, archetype, total_events, session_start, session_end, classified_at",
-      { count: "exact" }
-    )
-    .eq("tracking_id", trackingId)
-    .not("archetype", "is", null)
-    .order("session_start", { ascending: false })
-    .range(from, to);
+    const supabase = createServiceClient();
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
 
-  const sessions = data ?? [];
-  const hasMore = (count ?? 0) > to + 1;
+    const { data, count: totalCount } = await supabase
+      .from("sessions")
+      .select(
+        "id, archetype, total_events, session_start, session_end, classified_at",
+        { count: "exact" }
+      )
+      .eq("tracking_id", trackingId)
+      .not("archetype", "is", null)
+      .order("session_start", { ascending: false })
+      .range(from, to);
+
+    sessions = data ?? [];
+    count = totalCount ?? 0;
+    hasMore = count > to + 1;
+  }
 
   return (
     <div className="space-y-6 max-w-5xl">

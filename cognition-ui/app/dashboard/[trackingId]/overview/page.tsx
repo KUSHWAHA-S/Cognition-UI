@@ -6,6 +6,7 @@ import { ArchetypeDonut } from "@/features/dashboard/components/ArchetypeDonut";
 import { SessionTrend } from "@/features/dashboard/components/SessionTrend";
 import { ARCHETYPE_CONFIG } from "@/features/dashboard/constants";
 import type { OverviewData } from "@/features/dashboard/types";
+import { DEMO_TRACKING_ID, DEMO_OVERVIEW } from "@/features/dashboard/demoData";
 
 interface Props {
   params: Promise<{ trackingId: string }>;
@@ -70,12 +71,17 @@ async function getOverviewData(trackingId: string, userId: string): Promise<Over
 export default async function OverviewPage({ params }: Props) {
   const { trackingId } = await params;
 
-  const supabaseAuth = await createSupabaseServerClient();
-  const { data: { user } } = await supabaseAuth.auth.getUser();
-  if (!user) redirect("/login");
+  let data: OverviewData | null;
+  if (trackingId === DEMO_TRACKING_ID) {
+    data = DEMO_OVERVIEW;
+  } else {
+    const supabaseAuth = await createSupabaseServerClient();
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user) redirect("/login");
 
-  const data = await getOverviewData(trackingId, user.id);
-  if (!data) redirect("/dashboard");
+    data = await getOverviewData(trackingId, user.id);
+    if (!data) redirect("/dashboard");
+  }
 
   const topConfig = data.top_archetype
     ? ARCHETYPE_CONFIG[data.top_archetype]

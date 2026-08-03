@@ -314,9 +314,9 @@ export function SankeyDiagram({ flows }: { flows: RawFlow[] }) {
             style={{
               left: tooltip.x + 12,
               top: tooltip.y - 10,
-              background: "var(--bg-elevated)",
-              border: "1px solid var(--border-muted)",
-              color: "var(--text-secondary)",
+              background: "var(--text-primary)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(247,240,238,0.85)",
             }}
           >
             {tooltip.content}

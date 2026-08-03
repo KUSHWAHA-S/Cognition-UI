@@ -26,24 +26,22 @@ function formatDay(date: string) {
 function CustomTooltip({
   active,
   payload,
-  label,
 }: {
   active?: boolean;
-  payload?: { value: number }[];
-  label?: string;
+  payload?: { value: number; payload: { date: string; count: number } }[];
 }) {
   if (!active || !payload?.length) return null;
   return (
     <div
       className="rounded-lg px-3 py-2 text-sm shadow-xl"
       style={{
-        background: "var(--bg-elevated)",
-        border: "1px solid var(--border-muted)",
-        color: "var(--text-secondary)",
+        background: "var(--text-primary)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        color: "rgba(247,240,238,0.85)",
       }}
     >
-      <p style={{ color: "var(--text-muted)", fontSize: "11px" }}>
-        {label && formatDay(label)}
+      <p style={{ color: "rgba(247,240,238,0.55)", fontSize: "11px" }}>
+        {formatDay(payload[0].payload.date)}
       </p>
       <p style={{ color: "var(--orange-300)", fontWeight: 600 }}>
         {payload[0].value} sessions

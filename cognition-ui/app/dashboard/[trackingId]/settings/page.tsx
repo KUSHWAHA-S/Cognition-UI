@@ -1,17 +1,87 @@
 import { redirect, notFound } from "next/navigation";
+import { Lock } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { EmbedCode } from "@/features/projects/components/EmbedCode";
 import { ProjectSettingsForm } from "@/features/projects/components/ProjectSettingsForm";
 import { DangerZone } from "@/features/projects/components/DangerZone";
 import { ClassifyButton } from "@/features/projects/components/ClassifyButton";
+import { DEMO_TRACKING_ID } from "@/features/dashboard/demoData";
 
 interface Props {
   params: Promise<{ trackingId: string }>;
 }
 
+function DemoDisabledNotice({ label }: { label: string }) {
+  return (
+    <div
+      className="rounded-2xl p-6 flex items-start gap-3"
+      style={{
+        background: "var(--bg-elevated)",
+        border: "1px dashed var(--border-muted)",
+      }}
+    >
+      <div
+        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+        style={{ background: "var(--bg-surface)" }}
+      >
+        <Lock size={14} style={{ color: "var(--text-muted)" }} />
+      </div>
+      <div>
+        <h2
+          className="text-xs font-semibold uppercase tracking-wider mb-1"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {label}
+        </h2>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          Disabled in the demo — sign up to manage your own project.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default async function SettingsPage({ params }: Props) {
   const { trackingId } = await params;
+
+  if (trackingId === DEMO_TRACKING_ID) {
+    return (
+      <div className="space-y-8 max-w-2xl">
+        <div>
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Settings
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+            Manage your project and get your embed code.
+          </p>
+        </div>
+
+        <section
+          className="rounded-2xl p-6 space-y-1"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-subtle)",
+          }}
+        >
+          <h2
+            className="text-xs font-semibold uppercase tracking-wider mb-4"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Installation
+          </h2>
+          <EmbedCode trackingId={DEMO_TRACKING_ID} />
+        </section>
+
+        <DemoDisabledNotice label="Project details" />
+        <DemoDisabledNotice label="Session classification" />
+        <DemoDisabledNotice label="Danger zone" />
+      </div>
+    );
+  }
 
   const supabaseAuth = await createSupabaseServerClient();
   const { data: { user } } = await supabaseAuth.auth.getUser();

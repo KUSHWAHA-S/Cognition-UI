@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { ArchetypeBadge } from "@/features/sessions/components/ArchetypeBadge";
 import { ARCHETYPE_CONFIG } from "@/features/dashboard/constants";
 import type { Archetype } from "@/features/sessions/types";
+import { DEMO_TRACKING_ID, getDemoSessionDetail } from "@/features/dashboard/demoData";
 
 interface Props {
   params: Promise<{ trackingId: string; sessionId: string }>;
@@ -54,28 +55,51 @@ function toPath(url: string) {
 export default async function SessionDetailPage({ params }: Props) {
   const { trackingId, sessionId } = await params;
 
-  const supabaseAuth = await createSupabaseServerClient();
-  const { data: { user } } = await supabaseAuth.auth.getUser();
-  if (!user) redirect("/login");
+  let session: {
+    id: string;
+    archetype: string;
+    total_events: number;
+    session_start: string;
+    session_end: string;
+    velocity_score: number;
+    backtrack_score: number;
+    hesitation_score: number;
+    exploration_score: number;
+  } | null;
+  let events: { event_type: string; page_url: string; element_selector: string | null; x: number | null; y: number | null; duration_ms: number | null; scroll_depth: number | null; timestamp: string }[] | null;
 
-  const supabase = createServiceClient();
+  if (trackingId === DEMO_TRACKING_ID) {
+    const detail = getDemoSessionDetail(sessionId);
+    if (!detail) notFound();
+    session = detail;
+    events = detail.events;
+  } else {
+    const supabaseAuth = await createSupabaseServerClient();
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user) redirect("/login");
 
-  // Verify session belongs to this project (which belongs to this user)
-  const { data: session } = await supabase
-    .from("sessions")
-    .select("id, archetype, total_events, session_start, session_end, velocity_score, backtrack_score, hesitation_score, exploration_score")
-    .eq("id", sessionId)
-    .eq("tracking_id", trackingId)
-    .maybeSingle();
+    const supabase = createServiceClient();
 
-  if (!session) notFound();
+    // Verify session belongs to this project (which belongs to this user)
+    const { data: sessionRow } = await supabase
+      .from("sessions")
+      .select("id, archetype, total_events, session_start, session_end, velocity_score, backtrack_score, hesitation_score, exploration_score")
+      .eq("id", sessionId)
+      .eq("tracking_id", trackingId)
+      .maybeSingle();
 
-  const { data: events } = await supabase
-    .from("events")
-    .select("event_type, page_url, element_selector, x, y, duration_ms, scroll_depth, timestamp")
-    .eq("session_id", sessionId)
-    .eq("tracking_id", trackingId)
-    .order("timestamp", { ascending: true });
+    if (!sessionRow) notFound();
+    session = sessionRow;
+
+    const { data: eventRows } = await supabase
+      .from("events")
+      .select("event_type, page_url, element_selector, x, y, duration_ms, scroll_depth, timestamp")
+      .eq("session_id", sessionId)
+      .eq("tracking_id", trackingId)
+      .order("timestamp", { ascending: true });
+
+    events = eventRows;
+  }
 
   const archetype = session.archetype as Archetype;
   const cfg = ARCHETYPE_CONFIG[archetype];
